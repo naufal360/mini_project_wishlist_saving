@@ -1,0 +1,11 @@
+name: continuous delivery
+
+on:
+  push:
+    branches:
+      - "master"
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: "deploy set"

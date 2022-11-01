@@ -1,0 +1,11 @@
+name: continuous integration
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    name: "test set"
