@@ -3,12 +3,11 @@ package model
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Balance struct {
-	BalanceId    uuid.UUID `gorm:"type:uuid;primary_key;"`
+	BalanceId    string `gorm:"type:varchar(255);primary_key"`
 	AmmountMoney int
 	MonthSave    int
 	CreatedAt    time.Time

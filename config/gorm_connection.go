@@ -3,50 +3,34 @@ package config
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"wishlist/util"
 
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func InitGorm() *gorm.DB {
 	util.ProcessEnv()
 
-	var dsn string
 	host := os.Getenv("DB_HOST")
 	username := os.Getenv("DB_USERNAME")
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 
-	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
-	if err != nil {
-		logrus.Error("missing port!")
-		panic(err)
-	}
+	port := os.Getenv("DB_PORT")
 
-	if os.Getenv("CON_SSL") == "on" {
-		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d",
-			host,
-			username,
-			password,
-			dbname,
-			port,
-		)
-	} else {
-		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
-			host,
-			username,
-			password,
-			dbname,
-			port,
-		)
-	}
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		username,
+		password,
+		host,
+		port,
+		dbname,
+	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
-		logrus.Error("Can't connect postgres database!")
+		logrus.Error("Can't connect mysql database!")
 		panic(err)
 	}
 
