@@ -2,6 +2,7 @@ package service
 
 import (
 	"math"
+	"strconv"
 	"wishlist/dto/payload"
 	"wishlist/dto/response"
 	m "wishlist/middleware"
@@ -191,11 +192,16 @@ func (w *wishlistService) ReadRecommend(wishlistId string) (response.RecommendWi
 		insufficient = 0
 	}
 
+	responseMsg := "wishlist dengan nama " + wishlist.WhislistName + " serta dengan wishlist id " + wishlist.WishlistId +
+		", mari menabung lagi sebanyak " + strconv.Itoa(countRecommend) +
+		" kali dengan nominal sebesar Rp." + strconv.Itoa(insufficient/countRecommend) + ",- pada setiap kali menabung."
+
 	recommend := response.RecommendWishlist{
-		WishlistId:     wishlist.WishlistId,
-		Name:           wishlist.WhislistName,
-		Insufficient:   insufficient,
-		CountRecommend: countRecommend,
+		WishlistId:        wishlist.WishlistId,
+		Name:              wishlist.WhislistName,
+		Insufficient:      insufficient,
+		CountRecommend:    countRecommend,
+		ResponseRecommend: responseMsg,
 	}
 
 	return recommend, nil

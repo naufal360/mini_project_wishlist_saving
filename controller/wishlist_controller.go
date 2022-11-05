@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 	"wishlist/dto/payload"
 	service "wishlist/service/wishlist"
 	"wishlist/util"
@@ -104,9 +103,8 @@ func (w *WishlistController) ReadRecommend(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"messages": "wishlist dengan nama " + dataRecommend.Name + " serta dengan wishlist id " + dataRecommend.WishlistId +
-			", mari menabung lagi sebanyak " + strconv.Itoa(dataRecommend.CountRecommend) +
-			" kali dengan nominal sebesar Rp." + strconv.Itoa(dataRecommend.Insufficient/dataRecommend.CountRecommend) + ",- pada setiap kali menabung.",
+		"messages": "success get recommendation",
+		"data":     dataRecommend,
 	})
 }
 
