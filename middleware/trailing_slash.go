@@ -8,7 +8,3 @@ import (
 func RemoveSlash(routes *echo.Echo) {
 	routes.Pre(middleware.RemoveTrailingSlash())
 }
-
-func AddTrailingSlash(routes *echo.Echo) {
-	routes.Pre((middleware.AddTrailingSlash()))
-}

@@ -21,18 +21,10 @@ func CreateToken(userId string, username string) (string, error) {
 		},
 	}
 	key := []byte(os.Getenv("SECRET_JWT_KEY"))
-	// claims["userId"] = userId
-	// claims["username"] = username
-	// claims["exp"] =
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(key)
 }
-
-// type MyCustomClaims struct {
-// 	Id string `json:"-"`
-// 	jwt.StandardClaims
-// }
 
 func GetUserId(auth string) (string, error) {
 	claims := &payload.ClaimsCustom{}
