@@ -6,7 +6,7 @@ import (
 
 type HistoryBalance struct {
 	HistoryBalanceId string `gorm:"type:varchar(255);primary_key"`
-	Status           string
+	SavingMoney      int    `gorm:"type:int(11)"`
 	CreatedAt        time.Time
-	BalanceId        Balance `gorm:"foreignKey:BalanceId"`
+	BalanceIdHistory string `gorm:"type:varchar(255)"`
 }

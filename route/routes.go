@@ -4,6 +4,7 @@ import (
 	"wishlist/config"
 	mid "wishlist/middleware"
 	ur "wishlist/route/user"
+	wr "wishlist/route/wishlist"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,6 +13,7 @@ func Init() *echo.Echo {
 	dbConfig := config.InitGorm()
 
 	userAPI := config.InitUserAPI(dbConfig)
+	wishlistAPI := config.InitWishlistAPI(dbConfig)
 
 	routes := echo.New()
 
@@ -25,7 +27,10 @@ func Init() *echo.Echo {
 	ur.UserUnauthenticated(routes, userAPI)
 
 	// Authenticated
+	// user
 	ur.UserAuthenticated(routes, userAPI)
+	// wishlist
+	wr.WishlistAuthenticated(routes, wishlistAPI)
 
 	return routes
 }
