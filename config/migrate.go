@@ -9,8 +9,8 @@ import (
 func MigrateDB(db *gorm.DB) error {
 	return db.AutoMigrate(
 		model.User{},
-		// model.Wishlist{},
-		// model.Balance{},
-		// model.HistoryBalance{},
+		model.Wishlist{},
+		model.Balance{},
+		model.HistoryBalance{},
 	)
 }
