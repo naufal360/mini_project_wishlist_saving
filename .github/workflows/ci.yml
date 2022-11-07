@@ -8,4 +8,11 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
-    name: "test set"
+    name: "ini unit test"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: run unit test
+        run: go test -v ./controller/

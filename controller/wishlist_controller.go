@@ -92,9 +92,29 @@ func (w *WishlistController) ReadWishlist(ctx echo.Context) error {
 	})
 }
 
+func (w *WishlistController) ReadWishlistById(ctx echo.Context) error {
+	id := ctx.Param("wishlistid")
+
+	auth := ctx.Request().Header.Get("Authorization")
+	dataWishlist, err := w.WishlistService.ReadWishlistById(auth, id)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"messages": "success get wishlist",
+		"data":     dataWishlist,
+	})
+}
+
 func (w *WishlistController) ReadRecommend(ctx echo.Context) error {
 	wishlistId := ctx.Param("wishlistid")
-	dataRecommend, err := w.WishlistService.ReadRecommend(wishlistId)
+	auth := ctx.Request().Header.Get("Authorization")
+
+	dataRecommend, err := w.WishlistService.ReadRecommend(auth, wishlistId)
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -118,6 +138,7 @@ func (w *WishlistController) UpdateBalance(ctx echo.Context) error {
 	}
 
 	id := ctx.Param("wishlistid")
+	auth := ctx.Request().Header.Get("Authorization")
 
 	if err := util.ValidateUpdatePayloadBalance(payload); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -125,14 +146,16 @@ func (w *WishlistController) UpdateBalance(ctx echo.Context) error {
 		})
 	}
 
-	if err := w.WishlistService.UpdateBalance(payload, id); err != nil {
+	err := w.WishlistService.UpdateBalance(payload, auth, id)
+
+	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"error": err.Error(),
 		})
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"messages": "saving success",
+		"messages": "update balance success",
 	})
 }
 

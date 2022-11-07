@@ -14,6 +14,7 @@ func WishlistAuthenticated(routes *echo.Echo, api *controller.WishlistController
 
 	{
 		authUser.GET("/wishlist", api.ReadWishlist)
+		authUser.GET("/wishlist/:wishlistid", api.ReadWishlistById)
 		authUser.GET("/wishlist/recommend/:wishlistid", api.ReadRecommend)
 		authUser.POST("/wishlist", api.CreateWishlist)
 		authUser.PUT("/wishlist/:wishlistid", api.UpdateWishlist)

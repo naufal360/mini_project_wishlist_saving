@@ -13,9 +13,10 @@ type WishlistRepository interface {
 	UpdateWishlist(data model.Wishlist) error
 	UpdateBalance(data model.Balance) error
 	ReadWishlist(userId string) ([]model.Wishlist, error)
-	ReadWishlistById(id string) (model.Wishlist, error)
+	ReadWishlistById(auth, id string) (model.Wishlist, error)
 	ReadBalanceById(id string) (model.Balance, error)
 	DeleteWishlist(wishlistId string) error
+	DeleteBalanced(balancedId string) error
 }
 
 type wishlistRepository struct {
@@ -55,7 +56,7 @@ func (w *wishlistRepository) UpdateWishlist(data model.Wishlist) error {
 }
 
 func (w *wishlistRepository) UpdateBalance(data model.Balance) error {
-	if err := w.db.Model(&model.Balance{}).Where("wishlist_id = ?", data.WishlistId).Updates(&data).Error; err != nil {
+	if err := w.db.Model(&model.Balance{}).Where("balance_id = ?", data.BalanceId).Updates(&data).Error; err != nil {
 		return err
 	}
 	return nil
@@ -69,9 +70,9 @@ func (w *wishlistRepository) ReadWishlist(userId string) ([]model.Wishlist, erro
 	return wishlist, nil
 }
 
-func (w *wishlistRepository) ReadWishlistById(id string) (model.Wishlist, error) {
+func (w *wishlistRepository) ReadWishlistById(auth, id string) (model.Wishlist, error) {
 	var wishlist model.Wishlist
-	if err := w.db.Unscoped().Preload("BalanceId").Preload("BalanceId.HistoryBalances").Where("wishlist_id = ?", id).First(&wishlist).Error; err != nil {
+	if err := w.db.Unscoped().Preload("BalanceId").Preload("BalanceId.HistoryBalances").Where("wishlist_id = ? AND user_id = ?", id, auth).Find(&wishlist).Error; err != nil {
 		return wishlist, err
 	}
 	return wishlist, nil
@@ -87,7 +88,15 @@ func (w *wishlistRepository) ReadBalanceById(id string) (model.Balance, error) {
 
 func (w *wishlistRepository) DeleteWishlist(wishlistId string) error {
 	var data model.Wishlist
-	if err := w.db.Where("wishlist_id = ?", wishlistId).First(&data).Delete(&data).Error; err != nil {
+	if err := w.db.Where("wishlist_id = ?", wishlistId).Find(&data).Delete(&data).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w *wishlistRepository) DeleteBalanced(balancedId string) error {
+	var data model.Balance
+	if err := w.db.Where("balance_id = ?", balancedId).First(&data).Delete(&data).Error; err != nil {
 		return err
 	}
 	return nil

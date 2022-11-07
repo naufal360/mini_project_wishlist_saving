@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"math"
 	"strconv"
 	"wishlist/dto/payload"
@@ -15,9 +16,10 @@ import (
 type WishlistService interface {
 	CreateWishlist(payload payload.Wishlist, auth string) error
 	UpdateWishlist(payload payload.WishlistUpdate, id string) error
-	UpdateBalance(payload payload.SavingMoney, id string) error
+	UpdateBalance(payload payload.SavingMoney, auth, id string) error
 	ReadWishlist(auth string) ([]model.Wishlist, error)
-	ReadRecommend(wishlistId string) (response.RecommendWishlist, error)
+	ReadWishlistById(auth, id string) (model.Wishlist, error)
+	ReadRecommend(auth, wishlistId string) (response.RecommendWishlist, error)
 	DeleteWishlist(wishlistId string) error
 }
 
@@ -42,6 +44,7 @@ func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) 
 	idBalance := uuid.NewString()
 	idHistoryBalance := uuid.NewString()
 	isFinish := "onprogress"
+	statusHistory := "success"
 
 	newData := model.Wishlist{
 		WishlistId:   id,
@@ -55,6 +58,7 @@ func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) 
 	NewBalance := model.Balance{
 		BalanceId:    idBalance,
 		AmmountMoney: 0,
+		ExceedMoney:  0,
 		CountSave:    0,
 		WishlistId:   id,
 	}
@@ -62,6 +66,7 @@ func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) 
 	NewHistoryBalance := model.HistoryBalance{
 		HistoryBalanceId: idHistoryBalance,
 		SavingMoney:      0,
+		Status:           statusHistory,
 		BalanceIdHistory: idBalance,
 	}
 
@@ -99,24 +104,44 @@ func (w *wishlistService) UpdateWishlist(payload payload.WishlistUpdate, id stri
 	return nil
 }
 
-func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, id string) error {
-
+func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, auth, id string) error {
 	idHistoryBalance := uuid.NewString()
 
-	wishlist, err := w.wishlistRepo.ReadWishlistById(id)
+	userId, err := m.GetUserId(auth)
+	if err != nil {
+		return err
+	}
+
+	wishlist, err := w.wishlistRepo.ReadWishlistById(userId, id)
 
 	if err != nil {
 		return err
 	}
 
 	newMoney := wishlist.BalanceId.AmmountMoney + payload.SavingMoney
+	exceedNewMoney := newMoney - int(wishlist.TargetMoney)
 	countIncrement := wishlist.BalanceId.CountSave + 1
+	statusHistory := "success"
 
 	newData := model.Balance{
 		BalanceId:    wishlist.BalanceId.BalanceId,
 		AmmountMoney: newMoney,
+		ExceedMoney:  0,
 		CountSave:    countIncrement,
 		WishlistId:   id,
+	}
+
+	if newMoney > int(wishlist.TargetMoney) {
+		newData = model.Balance{
+			BalanceId:    wishlist.BalanceId.BalanceId,
+			AmmountMoney: int(wishlist.TargetMoney),
+			ExceedMoney:  exceedNewMoney,
+			CountSave:    countIncrement,
+			WishlistId:   id,
+		}
+		if wishlist.IsFinish == "finish" {
+			statusHistory = "failed"
+		}
 	}
 
 	err = w.wishlistRepo.UpdateBalance(newData)
@@ -129,18 +154,21 @@ func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, id string) 
 			WishlistId: id,
 			IsFinish:   "finish",
 		}
+
 		err := w.wishlistRepo.UpdateWishlist(wishlistData)
 		if err != nil {
 			return err
 		}
+
 		if err := w.wishlistRepo.DeleteWishlist(id); err != nil {
-			return err
+			return errors.New("youre wishlist already finish")
 		}
 	}
 
 	NewHistoryBalance := model.HistoryBalance{
 		HistoryBalanceId: idHistoryBalance,
 		SavingMoney:      payload.SavingMoney,
+		Status:           statusHistory,
 		BalanceIdHistory: wishlist.BalanceId.BalanceId,
 	}
 
@@ -168,11 +196,31 @@ func (w *wishlistService) ReadWishlist(auth string) ([]model.Wishlist, error) {
 	return allWishlist, nil
 }
 
-func (w *wishlistService) ReadRecommend(wishlistId string) (response.RecommendWishlist, error) {
+func (w *wishlistService) ReadWishlistById(auth, id string) (model.Wishlist, error) {
+	userId, err := m.GetUserId(auth)
+	if err != nil {
+		return model.Wishlist{}, err
+	}
+
+	wishlist, err := w.wishlistRepo.ReadWishlistById(userId, id)
+
+	if err != nil {
+		return wishlist, err
+	}
+
+	return wishlist, nil
+}
+
+func (w *wishlistService) ReadRecommend(auth, wishlistId string) (response.RecommendWishlist, error) {
 
 	var countRecommend, insufficient int
 
-	wishlist, err := w.wishlistRepo.ReadWishlistById(wishlistId)
+	userId, err := m.GetUserId(auth)
+	if err != nil {
+		return response.RecommendWishlist{}, err
+	}
+
+	wishlist, err := w.wishlistRepo.ReadWishlistById(userId, wishlistId)
 	if err != nil {
 		return response.RecommendWishlist{}, err
 	}
@@ -187,14 +235,17 @@ func (w *wishlistService) ReadRecommend(wishlistId string) (response.RecommendWi
 		countRecommend = int(wishlist.TargetMonth) - wishlist.BalanceId.CountSave
 	}
 
-	if insufficient < 0 {
-		countRecommend = 1
-		insufficient = 0
-	}
+	var messageResponse string
 
-	messageResponse := "wishlist dengan nama " + wishlist.WhislistName + " serta dengan wishlist id " + wishlist.WishlistId +
-		", mari menabung lagi sebanyak " + strconv.Itoa(countRecommend) +
-		" kali dengan nominal sebesar Rp." + strconv.Itoa(insufficient/countRecommend) + ",- pada setiap kali menabung."
+	if insufficient <= 0 && countRecommend <= 0 {
+		countRecommend = 0
+		insufficient = 0
+		messageResponse = "Congratulation, now you can buy your " + wishlist.WhislistName + "!"
+	} else {
+		messageResponse = "wishlist dengan nama " + wishlist.WhislistName + " serta dengan wishlist id " + wishlist.WishlistId +
+			", mari menabung lagi sebanyak " + strconv.Itoa(countRecommend) +
+			" kali dengan nominal sebesar Rp." + strconv.Itoa(insufficient/countRecommend) + ",- pada setiap kali menabung."
+	}
 
 	recommend := response.RecommendWishlist{
 		WishlistId:        wishlist.WishlistId,
