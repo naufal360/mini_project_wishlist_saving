@@ -27,6 +27,7 @@ func Init() *echo.Echo {
 	ur.UserUnauthenticated(routes, userAPI)
 
 	// Authenticated
+
 	// user
 	ur.UserAuthenticated(routes, userAPI)
 	// wishlist
