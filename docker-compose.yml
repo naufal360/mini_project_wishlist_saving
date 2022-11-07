@@ -1,0 +1,11 @@
+version: '3.9'
+services:
+  docker-wishlist:
+    image: naufal360/docker-wishlist:v1
+    environment:
+      - DB_USERNAME=admin
+      - DB_PASSWORD=root
+      - DB_HOST=34.124.157.230
+    ports:
+      - "80:80"
+    restart: on-failure
