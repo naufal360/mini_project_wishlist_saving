@@ -21,7 +21,7 @@
 }
 ```
 
-### Sign In
+### Login
 
 - Method: POST
 - Url: /v1/login
@@ -88,30 +88,30 @@
 {
   "message": "string",
   "data": {
-    "WishlistId": "e1b8cfed-61e8-44fa-968c-68c4754436f5",
-    "WhislistName": "Sepatu Converse",
-    "TargetMoney": 500000,
-    "TargetMonth": 4,
-    "CreatedAt": "2022-11-07T08:55:12.933Z",
-    "UpdatedAt": "2022-11-07T08:55:12.933Z",
+    "WishlistId": "string",
+    "WhislistName": "string",
+    "TargetMoney": "int",
+    "TargetMonth": "int",
+    "CreatedAt": "string",
+    "UpdatedAt": "string",
     "DeletedAt": null,
-    "IsFinish": "onprogress",
-    "UserId": "f94ccab1-fbfe-4573-89d2-e0b91b18e242",
+    "IsFinish": "string",
+    "UserId": "string",
     "BalanceId": {
-      "BalanceId": "993ff2b3-e978-4d36-a0c5-fe31b344b265",
-      "AmmountMoney": 0,
-      "ExceedMoney": 0,
-      "CountSave": 0,
-      "CreatedAt": "2022-11-07T08:55:12.945Z",
-      "UpdatedAt": "2022-11-07T08:55:12.945Z",
-      "WishlistId": "e1b8cfed-61e8-44fa-968c-68c4754436f5",
+      "BalanceId": "string",
+      "AmmountMoney": "int",
+      "ExceedMoney": "int",
+      "CountSave": "int",
+      "CreatedAt": "string",
+      "UpdatedAt": "string",
+      "WishlistId": "string",
       "HistoryBalances": [
         {
-          "HistoryBalanceId": "64843456-3797-49c3-bbf5-b8442234f640",
-          "SavingMoney": 0,
-          "Status": "success",
-          "CreatedAt": "2022-11-07T08:55:12.957Z",
-          "BalanceIdHistory": "993ff2b3-e978-4d36-a0c5-fe31b344b265"
+          "HistoryBalanceId": "string",
+          "SavingMoney": "int",
+          "Status": "string",
+          "CreatedAt": "string",
+          "BalanceIdHistory": "string"
         }
       ]
     }
