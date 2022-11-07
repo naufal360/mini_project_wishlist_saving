@@ -30,13 +30,11 @@ func NewUserService(userRepo mysqldb.UserRepository) *userService {
 func (u *userService) RegisterUser(payload payload.Register) error {
 
 	hashPass, err := util.HashPassword(payload.Password)
-
 	if err != nil {
 		return err
 	}
 
 	id := uuid.NewString()
-
 	userModel := model.User{
 		ID:       id,
 		Name:     payload.Name,
@@ -46,7 +44,6 @@ func (u *userService) RegisterUser(payload payload.Register) error {
 	}
 
 	errRepo := u.UserRepo.RegisterUser(userModel)
-
 	if errRepo != nil {
 		return errors.New("username or email already exist")
 	}
@@ -62,19 +59,16 @@ func (u *userService) LoginUser(payload payload.Login) (response.Login, error) {
 		Password: payload.Password,
 	}
 
-	// get user data
 	userData, err := u.UserRepo.LoginUser(userModel)
 	if err != nil {
 		return loginResponse, err
 	}
 
-	// check hash
 	isValid := util.CheckPasswordHash(payload.Password, userData.Password)
 	if !isValid {
 		return loginResponse, errors.New("wrong password")
 	}
 
-	// jwt
 	token, errToken := m.CreateToken(userData.ID, userData.Username)
 
 	if errToken != nil {
@@ -85,6 +79,5 @@ func (u *userService) LoginUser(payload payload.Login) (response.Login, error) {
 		Token: token,
 	}
 
-	// return response
 	return loginResponse, nil
 }
