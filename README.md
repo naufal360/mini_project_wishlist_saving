@@ -122,7 +122,7 @@
 ### Get Recommendation From Wishlist
 
 - Method: GET
-- Url: /v1/wishlist/recommend/:wishlistid
+- Url: /v1/wishlist/:wishlistid/recommend
 - Header: Bearer token
 
 ```json
@@ -171,7 +171,7 @@
 ### Saving Money to Balance Wishlist
 
 - Method: PUT
-- Url: /v1/wishlist/balance/:wishlistid
+- Url: /v1/wishlist/:wishlistid/balance
 - Header: Bearer token
 
 ```json

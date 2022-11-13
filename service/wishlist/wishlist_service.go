@@ -174,11 +174,7 @@ func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, auth, id st
 
 	err = w.wishlistRepo.CreateHistoryBalance(NewHistoryBalance)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (w *wishlistService) ReadWishlist(auth string) ([]model.Wishlist, error) {

@@ -15,10 +15,10 @@ func WishlistAuthenticated(routes *echo.Echo, api *controller.WishlistController
 	{
 		authUser.GET("/wishlist", api.ReadWishlist)
 		authUser.GET("/wishlist/:wishlistid", api.ReadWishlistById)
-		authUser.GET("/wishlist/recommend/:wishlistid", api.ReadRecommend)
+		authUser.GET("/wishlist/:wishlistid/recommend", api.ReadRecommend)
 		authUser.POST("/wishlist", api.CreateWishlist)
 		authUser.PUT("/wishlist/:wishlistid", api.UpdateWishlist)
-		authUser.PUT("/wishlist/balance/:wishlistid", api.UpdateBalance)
+		authUser.PUT("/wishlist/:wishlistid/balance", api.UpdateBalance)
 		authUser.DELETE("/wishlist/:wishlistid", api.DeleteWishlist)
 	}
 }
