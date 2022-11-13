@@ -28,8 +28,6 @@ func Init() *echo.Echo {
 
 	// Authenticated
 
-	// user
-	ur.UserAuthenticated(routes, userAPI)
 	// wishlist
 	wr.WishlistAuthenticated(routes, wishlistAPI)
 
