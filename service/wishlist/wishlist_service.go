@@ -14,9 +14,9 @@ import (
 )
 
 type WishlistService interface {
-	CreateWishlist(payload payload.Wishlist, auth string) error
-	UpdateWishlist(payload payload.WishlistUpdate, id string) error
-	UpdateBalance(payload payload.SavingMoney, auth, id string) error
+	CreateWishlist(payloads payload.Wishlist, auth string) error
+	UpdateWishlist(payloads payload.WishlistUpdate, id string) error
+	UpdateBalance(payloads payload.SavingMoney, auth, id string) error
 	ReadWishlist(auth string) ([]model.Wishlist, error)
 	ReadWishlistById(auth, id string) (model.Wishlist, error)
 	ReadRecommend(auth, wishlistId string) (response.RecommendWishlist, error)
@@ -33,7 +33,7 @@ func NewWishlistService(wishlistRepo mysqldb.WishlistRepository) *wishlistServic
 	}
 }
 
-func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) error {
+func (w *wishlistService) CreateWishlist(payloads payload.Wishlist, auth string) error {
 
 	userId, err := m.GetUserId(auth)
 	if err != nil {
@@ -48,9 +48,9 @@ func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) 
 
 	newData := model.Wishlist{
 		WishlistId:   id,
-		WhislistName: payload.WhislistName,
-		TargetMoney:  payload.TargetMoney,
-		TargetMonth:  payload.TargetMonth,
+		WhislistName: payloads.WhislistName,
+		TargetMoney:  payloads.TargetMoney,
+		TargetMonth:  payloads.TargetMonth,
 		IsFinish:     isFinish,
 		UserId:       userId,
 	}
@@ -90,12 +90,12 @@ func (w *wishlistService) CreateWishlist(payload payload.Wishlist, auth string) 
 	return nil
 }
 
-func (w *wishlistService) UpdateWishlist(payload payload.WishlistUpdate, id string) error {
+func (w *wishlistService) UpdateWishlist(payloads payload.WishlistUpdate, id string) error {
 	newData := model.Wishlist{
 		WishlistId:   id,
-		WhislistName: payload.WhislistName,
-		TargetMoney:  payload.TargetMoney,
-		TargetMonth:  payload.TargetMonth,
+		WhislistName: payloads.WhislistName,
+		TargetMoney:  payloads.TargetMoney,
+		TargetMonth:  payloads.TargetMonth,
 	}
 
 	if err := w.wishlistRepo.UpdateWishlist(newData); err != nil {
@@ -104,7 +104,7 @@ func (w *wishlistService) UpdateWishlist(payload payload.WishlistUpdate, id stri
 	return nil
 }
 
-func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, auth, id string) error {
+func (w *wishlistService) UpdateBalance(payloads payload.SavingMoney, auth, id string) error {
 	idHistoryBalance := uuid.NewString()
 
 	userId, err := m.GetUserId(auth)
@@ -118,7 +118,7 @@ func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, auth, id st
 		return err
 	}
 
-	newMoney := wishlist.BalanceId.AmmountMoney + payload.SavingMoney
+	newMoney := wishlist.BalanceId.AmmountMoney + payloads.SavingMoney
 	exceedNewMoney := newMoney - int(wishlist.TargetMoney)
 	countIncrement := wishlist.BalanceId.CountSave + 1
 	statusHistory := "success"
@@ -167,7 +167,7 @@ func (w *wishlistService) UpdateBalance(payload payload.SavingMoney, auth, id st
 
 	NewHistoryBalance := model.HistoryBalance{
 		HistoryBalanceId: idHistoryBalance,
-		SavingMoney:      payload.SavingMoney,
+		SavingMoney:      payloads.SavingMoney,
 		Status:           statusHistory,
 		BalanceIdHistory: wishlist.BalanceId.BalanceId,
 	}
