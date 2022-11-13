@@ -38,7 +38,7 @@
 ### Get All Wishlists
 
 - Method: GET
-- Url: /v1/wishlist
+- Url: /v1/wishlists
 - Header: Bearer token
 
 ```json
@@ -81,7 +81,7 @@
 ### Get Wishlist
 
 - Method: GET
-- Url: /v1/wishlist/:wishlistid
+- Url: /v1/wishlists/:wishlistid
 - Header: Bearer token
 
 ```json
@@ -122,7 +122,7 @@
 ### Get Recommendation From Wishlist
 
 - Method: GET
-- Url: /v1/wishlist/recommend/:wishlistid
+- Url: /v1/wishlists/:wishlistid/recommend
 - Header: Bearer token
 
 ```json
@@ -143,7 +143,7 @@
 ### Create Wishlist
 
 - Method: POST
-- Url: /v1/wishlist
+- Url: /v1/wishlists
 - Header: Bearer token
 
 ```json
@@ -157,7 +157,7 @@
 ### Edit Wishlist
 
 - Method: PUT
-- Url: /v1/wishlist/:wishlistid
+- Url: /v1/wishlists/:wishlistid
 - Header: Bearer token
 
 ```json
@@ -171,7 +171,7 @@
 ### Saving Money to Balance Wishlist
 
 - Method: PUT
-- Url: /v1/wishlist/balance/:wishlistid
+- Url: /v1/wishlists/:wishlistid/balances
 - Header: Bearer token
 
 ```json
@@ -183,7 +183,7 @@
 ### Delete Wishlist
 
 - Method: DELETE
-- Url: /v1/wishlist/:wishlistid
+- Url: /v1/wishlists/:wishlistid
 - Header: Bearer token
 
 ```json
